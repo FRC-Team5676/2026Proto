@@ -4,14 +4,11 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.*;
-
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -25,25 +22,21 @@ import frc.robot.subsystems.FuelIntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
 public class RobotContainer {
-    private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
-    private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second
-                                                                                      // max angular velocity
 
     /* Setting up bindings for necessary control of the swerve drive platform */
-    private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-        .withDeadband(MaxSpeed * 0.05).withRotationalDeadband(MaxAngularRate * 0.35) // Add a 10% deadband
+    private final SwerveRequest.FieldCentric driveField = new SwerveRequest.FieldCentric()
         .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
-    //private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-    private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
-    //private final SwerveRequest.RobotCentric forwardStraight = new SwerveRequest.RobotCentric().withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+    private final SwerveRequest.RobotCentric driveRobot = new SwerveRequest.RobotCentric()
+        .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
-    private final Telemetry logger = new Telemetry(MaxSpeed);
+    private final Telemetry logger = new Telemetry(Constants.MaxLinearRate);
 
     private final AutonManager autonManager = new AutonManager();
     private final CommandJoystick driver = new CommandJoystick(0);
     private final CommandXboxController operator = new CommandXboxController(1);
     private final FuelIntakeSubsystem intake = new FuelIntakeSubsystem();
     private final ShooterSubsystem shooter = new ShooterSubsystem();
+    private final DriverContainer driverContainer = new DriverContainer(driver);
 
     public final SwerveSubsystem drivetrain = TunerConstants.createDrivetrain();
 
@@ -74,22 +67,25 @@ public class RobotContainer {
         // and Y is defined as to the left according to WPILib convention.
 
         // Calculate drivetrain commands from Joystick values
-        double forward = -driver.getY() * MaxSpeed;
-        double strafe = -driver.getX() * MaxSpeed;
-        double turn = -driver.getTwist() * MaxAngularRate;
-        
+        double forward = driverContainer.getY();
+        double strafe = driverContainer.getX();
+        double turn = driverContainer.getTwist();
+
+        // Drivetrain will execute this command periodically
         drivetrain.setDefaultCommand(
-                // Drivetrain will execute this command periodically
-                drivetrain.applyRequest(() -> drive.withVelocityX(forward) // Drive forward with negative Y (forward)
-                        .withVelocityY(strafe) // Drive left with negative X (left)
-                        .withRotationalRate(turn) // Drive counterclockwise with
-                                                                                  // negative X (left)
-                ));
+                drivetrain.applyRequest(() -> driveField
+                        .withVelocityX(forward)
+                        .withVelocityY(strafe)
+                        .withRotationalRate(turn)));
 
         drivetrain.registerTelemetry(logger::telemeterize); 
         
         // Robot centric driving
-        driver.button(12).whileTrue(drivetrain.applyRequest(() -> point.withModuleDirection(new Rotation2d(-driver.getY(), -driver.getX()))));
+        driver.button(12).whileTrue(
+                drivetrain.applyRequest(() -> driveRobot
+                        .withVelocityX(forward)
+                        .withVelocityY(strafe)
+                        .withRotationalRate(turn)));
 
         // Reset the field-centric heading
         driver.button(8).onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
