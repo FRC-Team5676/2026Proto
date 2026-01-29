@@ -1,5 +1,7 @@
 package frc.robot;
 
+import org.photonvision.PhotonCamera;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 
@@ -8,9 +10,15 @@ public class DriverContainer {
     // and Y is defined as to the left according to WPILib convention.
 
     private CommandJoystick driver;
-    
-        public DriverContainer(CommandJoystick driver) {
-            this.driver = driver;
+
+    // Limelight/PhotonVision
+    private final PhotonCamera camera = new PhotonCamera("Camera_Module_v1");
+    private final double VISION_TURN_kP = 0.05;
+    private double visionTurn = 0.0;
+
+
+    public DriverContainer(CommandJoystick driver) {
+        this.driver = driver;
 
     }
 
@@ -67,5 +75,32 @@ public class DriverContainer {
         value = MathUtil.applyDeadband(value, deadband);
         value = Math.signum(value) * Math.pow(value, 2);
         return value * Constants.MaxAngularRate * multiplier * multiplierButton;
+    }
+
+    public double getVisionTwist() {
+        // Read camera data
+        boolean targetVisible = false;
+        double targetYaw = 0.0;
+        var results = camera.getAllUnreadResults();
+        if (!results.isEmpty()) {
+            var result = results.get(results.size() - 1);
+            if (result.hasTargets()) {
+                for (var target : result.getTargets()) {
+                    if (target.getFiducialId() == 9) {
+                        targetYaw = target.getYaw();
+                        targetVisible = true;
+                    }
+                }
+            }
+        }
+
+        // Auto-align to target when button held
+        if (targetVisible) {
+            visionTurn = -1.0 * targetYaw * VISION_TURN_kP * Constants.MaxAngularRate;
+        } else {
+            visionTurn = 0.0;
+        }
+
+        return visionTurn;
     }
 }

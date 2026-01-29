@@ -66,26 +66,28 @@ public class RobotContainer {
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
 
-        // Calculate drivetrain commands from Joystick values
-        double forward = driverContainer.getY();
-        double strafe = driverContainer.getX();
-        double turn = driverContainer.getTwist();
-
         // Drivetrain will execute this command periodically
         drivetrain.setDefaultCommand(
                 drivetrain.applyRequest(() -> driveField
-                        .withVelocityX(forward)
-                        .withVelocityY(strafe)
-                        .withRotationalRate(turn)));
+                        .withVelocityX(driverContainer.getY())
+                        .withVelocityY(driverContainer.getX())
+                        .withRotationalRate(driverContainer.getTwist())));
 
         drivetrain.registerTelemetry(logger::telemeterize); 
         
         // Robot centric driving
         driver.button(12).whileTrue(
                 drivetrain.applyRequest(() -> driveRobot
-                        .withVelocityX(forward)
-                        .withVelocityY(strafe)
-                        .withRotationalRate(turn)));
+                        .withVelocityX(driverContainer.getY())
+                        .withVelocityY(driverContainer.getX())
+                        .withRotationalRate(driverContainer.getTwist())));
+
+        // Auto-align to target when button held
+        driver.button(4).whileTrue(
+                drivetrain.applyRequest(() -> driveField
+                        .withVelocityX(driverContainer.getY())
+                        .withVelocityY(driverContainer.getX())
+                        .withRotationalRate(driverContainer.getVisionTwist())));
 
         // Reset the field-centric heading
         driver.button(8).onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
