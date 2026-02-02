@@ -7,11 +7,7 @@ package frc.robot;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
-import com.pathplanner.lib.commands.PathPlannerAuto;
-
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import frc.robot.commands.auto.AutoCommands;
@@ -58,6 +54,7 @@ public class RobotContainer {
         autonManager.addDefaultOption("Middle To Side", AutoCommands.moveMiddleToSide());
         autonManager.addOption("Left", AutoCommands.moveLeft());
         autonManager.addOption("Right", AutoCommands.moveRight());
+       // autonManager.addOption("Test with vision", AutoCommands.moveTest());
         
       }
     
@@ -85,9 +82,19 @@ public class RobotContainer {
         // Auto-align to target when button held
         driver.button(4).whileTrue(
                 drivetrain.applyRequest(() -> driveField
+                        
                         .withVelocityX(driverContainer.getY())
                         .withVelocityY(driverContainer.getX())
-                        .withRotationalRate(driverContainer.getVisionTwist())));
+                        .withRotationalRate(driverContainer.getVisionTwist())
+                        ));
+
+        driver.button(6).whileTrue(
+                drivetrain.applyRequest(() -> driveRobot
+                        
+                        .withVelocityX(driverContainer.getY())
+                        .withVelocityY(driverContainer.getVisionStrafe())
+                        .withRotationalRate(0)
+                        ));
 
         // Reset the field-centric heading
         driver.button(8).onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
@@ -99,4 +106,11 @@ public class RobotContainer {
         driver.button(1).onFalse(shooter.runOnce(() -> shooter.stopShooter()));
 
     }
+
+    /*
+	public void autoAlign() {
+		
+        driveField.withRotationalRate(driverContainer.getVisionTwist());
+	}
+    */
 }

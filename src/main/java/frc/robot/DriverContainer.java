@@ -1,8 +1,9 @@
 package frc.robot;
 
-import org.photonvision.PhotonCamera;
+import org.photonvision.*;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 
 public class DriverContainer {
@@ -14,7 +15,11 @@ public class DriverContainer {
     // Limelight/PhotonVision
     private final PhotonCamera camera = new PhotonCamera("Camera_Module_v1");
     private final double VISION_TURN_kP = 0.05;
+    private final double VISION_STRAFE_kP = 0.4;
+    private final double VISION_DES_ANGLE_deg = 0.0; // Target angle offset?
+    private final double VISION_DES_RANGE_m = 2.0; // Target distance offset?
     private double visionTurn = 0.0;
+    private double visionStrafe = 0.0;
 
 
     public DriverContainer(CommandJoystick driver) {
@@ -96,11 +101,40 @@ public class DriverContainer {
 
         // Auto-align to target when button held
         if (targetVisible) {
-            visionTurn = -1.0 * targetYaw * VISION_TURN_kP * Constants.MaxAngularRate;
+            visionTurn = (VISION_DES_ANGLE_deg - targetYaw) * VISION_TURN_kP * Constants.MaxAngularRate;
         } else {
             visionTurn = 0.0;
         }
 
         return visionTurn;
+    }
+
+    public double getVisionStrafe() {
+        // Read camera data
+        boolean targetVisible = false;
+        double targetRange = 0.0;
+        var results = camera.getAllUnreadResults();
+        if (!results.isEmpty()) {
+            var result = results.get(results.size() - 1);
+            if (result.hasTargets()) {
+                for (var target : result.getTargets()) {
+                    if (target.getFiducialId() == 9) {
+                        targetRange = 
+                                 PhotonUtils.calculateDistanceToTargetMeters(
+                                     .64, 0.45, Units.degreesToRadians(0), Units.degreesToRadians(target.getPitch()));
+                        targetVisible = true;
+                    }
+                }
+            }
+        }
+
+        // Auto-align to target when button held
+        if (targetVisible) {
+            visionStrafe = (VISION_DES_RANGE_m - targetRange) * VISION_STRAFE_kP * Constants.MaxLinearRate;
+        } else {
+            visionStrafe = 0.0;
+        }
+
+        return -visionStrafe;
     }
 }
