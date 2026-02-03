@@ -4,11 +4,11 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class ShooterSubsystem extends SubsystemBase {
+public class AimerSubsystem extends SubsystemBase {
 
   public double m_TargetRadians;
 
-  private final int m_canId = 51;
+  private final int m_canId = 52;
 
   private final TalonFX m_driveMotor;
 
@@ -16,7 +16,7 @@ public class ShooterSubsystem extends SubsystemBase {
   private final double trayDownPosition = 1400;
   private final double coralPlacePosition = 2800; */
 
-  public ShooterSubsystem() {
+  public AimerSubsystem() {
     // Drive Motor setup
     m_driveMotor = new TalonFX(m_canId);
     m_driveMotor.getConfigurator().apply(new TalonFXConfiguration());
@@ -27,11 +27,11 @@ public class ShooterSubsystem extends SubsystemBase {
   public void periodic() {
   }
 
-  public void activateShooter() {
-    m_driveMotor.set(-0.65); // Negative for inverse rotation
+  public void rotateAimer(double power) {
+    m_driveMotor.set(power);
   }
 
-  public void stopShooter() {
+  public void stopAimer() {
     m_driveMotor.set(0);
   }
 

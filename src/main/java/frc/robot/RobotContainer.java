@@ -7,6 +7,7 @@ package frc.robot;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
@@ -16,6 +17,7 @@ import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.utils.AutonManager;
 import frc.robot.subsystems.FuelIntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.AimerSubsystem;
 
 public class RobotContainer {
 
@@ -33,6 +35,7 @@ public class RobotContainer {
     private final FuelIntakeSubsystem intake = new FuelIntakeSubsystem();
     private final ShooterSubsystem shooter = new ShooterSubsystem();
     private final DriverContainer driverContainer = new DriverContainer(driver);
+    private final AimerSubsystem aimer = new AimerSubsystem();
 
     public final SwerveSubsystem drivetrain = TunerConstants.createDrivetrain();
 
@@ -64,6 +67,8 @@ public class RobotContainer {
         // and Y is defined as to the left according to WPILib convention.
 
         // Drivetrain will execute this command periodically
+
+        /*
         drivetrain.setDefaultCommand(
                 drivetrain.applyRequest(() -> driveField
                         .withVelocityX(driverContainer.getY())
@@ -88,6 +93,8 @@ public class RobotContainer {
                         .withRotationalRate(driverContainer.getVisionTwist())
                         ));
 
+                        
+        // Auto-move to certain range from target
         driver.button(6).whileTrue(
                 drivetrain.applyRequest(() -> driveRobot
                         
@@ -95,6 +102,8 @@ public class RobotContainer {
                         .withVelocityY(driverContainer.getVisionStrafe())
                         .withRotationalRate(0)
                         ));
+
+                        */
 
         // Reset the field-centric heading
         driver.button(8).onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
@@ -104,6 +113,12 @@ public class RobotContainer {
 
         driver.button(1).onTrue(shooter.runOnce(() -> shooter.activateShooter()));
         driver.button(1).onFalse(shooter.runOnce(() -> shooter.stopShooter()));
+
+        driver.button(4).onTrue(aimer.runOnce(() -> aimer.rotateAimer(-0.05)));
+        driver.button(4).onFalse(aimer.runOnce(() -> aimer.stopAimer()));
+
+        driver.button(6).onTrue(aimer.runOnce(() -> aimer.rotateAimer(0.05)));
+        driver.button(6).onFalse(aimer.runOnce(() -> aimer.stopAimer()));
 
     }
 
