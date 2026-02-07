@@ -16,15 +16,14 @@ public class DriverContainer {
     private final PhotonCamera camera = new PhotonCamera("Camera_Module_v1");
     private final double VISION_TURN_kP = 0.05;
     private final double VISION_STRAFE_kP = 0.4;
-    private final double VISION_DES_ANGLE_deg = 0.0; // Target angle offset?
-    private final double VISION_DES_RANGE_m = 2.0; // Target distance offset?
+    private final double VISION_DES_ANGLE_deg = 0.0; // Target angle offset
+    private final double VISION_DES_RANGE_m = 2.0; // Target distance offset
     private double visionTurn = 0.0;
     private double visionStrafe = 0.0;
 
 
     public DriverContainer(CommandJoystick driver) {
         this.driver = driver;
-
     }
 
     public double getX() {
