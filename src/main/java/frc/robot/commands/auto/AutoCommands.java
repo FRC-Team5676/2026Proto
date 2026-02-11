@@ -8,8 +8,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 
 public class AutoCommands extends Command {
 
-    
-
     public static Command moveTest() {
         return Commands.sequence(
             new PathPlannerAuto("Test with vision")

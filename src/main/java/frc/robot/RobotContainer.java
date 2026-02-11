@@ -19,6 +19,7 @@ import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.utils.AutonManager;
 import frc.robot.subsystems.FuelIntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.ActivatorSubsystem;
 import frc.robot.subsystems.AimerSubsystem;
 
 public class RobotContainer {
@@ -38,6 +39,7 @@ public class RobotContainer {
     private final ShooterSubsystem shooter = new ShooterSubsystem();
     private final DriverContainer driverContainer = new DriverContainer(driver);
     private final AimerSubsystem aimer = new AimerSubsystem();
+    private final ActivatorSubsystem activator = new ActivatorSubsystem();
 
     public final SwerveSubsystem drivetrain = TunerConstants.createDrivetrain();
 
@@ -51,11 +53,11 @@ public class RobotContainer {
         configureBindings();
     }
         
-    public Command getAutonomousCommand() {
+    public Command getAutonomousCommand() { // Note: this might prevent having multiple autos
         return Commands.sequence(   autonManager.getSelected(),
-                                    drivetrain.applyRequest(() -> driveField
-                                    .withRotationalRate(driverContainer.getVisionTwist())),
-                                    Commands.waitSeconds(1));
+                                    drivetrain.applyRequest(() -> driveField.withRotationalRate(driverContainer.getVisionTwist())),
+                                    Commands.waitSeconds(1)
+                                    );
     }
 
     private void addAutonomousChoices() {
@@ -70,7 +72,7 @@ public class RobotContainer {
 
         // Drivetrain will execute this command periodically
 
-        
+        /* 
         drivetrain.setDefaultCommand(
                 drivetrain.applyRequest(() -> driveField
                         .withVelocityX(driverContainer.getY())
@@ -86,6 +88,7 @@ public class RobotContainer {
                         .withVelocityY(driverContainer.getX())
                         .withRotationalRate(driverContainer.getTwist())));
 
+        
         // Auto-align to target when button held
         driver.button(4).whileTrue(
                 drivetrain.applyRequest(() -> driveField
@@ -105,7 +108,7 @@ public class RobotContainer {
                         .withRotationalRate(0)
                         ));
 
-                        
+                        */
 
         // Reset the field-centric heading
         driver.button(8).onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
@@ -117,14 +120,15 @@ public class RobotContainer {
         driver.button(1).onFalse(shooter.runOnce(() -> shooter.stopShooter()));
 
 
-        /*
-        driver.button(4).onTrue(aimer.runOnce(() -> aimer.rotateAimer(-0.05)));
+        
+        driver.button(4).onTrue(aimer.runOnce(() -> aimer.rotateAimer(0.1)));
         driver.button(4).onFalse(aimer.runOnce(() -> aimer.stopAimer()));
 
-        driver.button(6).onTrue(aimer.runOnce(() -> aimer.rotateAimer(0.05)));
+        driver.button(6).onTrue(aimer.runOnce(() -> aimer.rotateAimer(-0.1)));
         driver.button(6).onFalse(aimer.runOnce(() -> aimer.stopAimer()));
 
-        */
+        driver.button(5).onTrue(activator.runOnce(() -> activator.startActivator()));
+        driver.button(5).onFalse(activator.runOnce(() -> activator.stopActivator()));
 
     }
 
