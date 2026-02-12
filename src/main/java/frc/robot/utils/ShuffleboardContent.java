@@ -4,9 +4,12 @@
 
 package frc.robot.utils;
 
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.FuelIntakeSubsystem;
 
 /** Add your docs here. */
@@ -19,6 +22,28 @@ public class ShuffleboardContent {
         }
 
         /* 
+
+        SmartDashboard.putData("Swerve Drive", new Sendable() {
+                @Override
+                public void initSendable(SendableBuilder builder) {
+                builder.setSmartDashboardType("SwerveDrive");
+
+                builder.addDoubleProperty("Front Left Angle", () -> frontLeftModule.getAngle().getRadians(), null);
+                builder.addDoubleProperty("Front Left Velocity", () -> frontLeftModule.getVelocity(), null);
+
+                builder.addDoubleProperty("Front Right Angle", () -> frontRightModule.getAngle().getRadians(), null);
+                builder.addDoubleProperty("Front Right Velocity", () -> frontRightModule.getVelocity(), null);
+
+                builder.addDoubleProperty("Back Left Angle", () -> backLeftModule.getAngle().getRadians(), null);
+                builder.addDoubleProperty("Back Left Velocity", () -> backLeftModule.getVelocity(), null);
+
+                builder.addDoubleProperty("Back Right Angle", () -> backRightModule.getAngle().getRadians(), null);
+                builder.addDoubleProperty("Back Right Velocity", () -> backRightModule.getVelocity(), null);
+
+                builder.addDoubleProperty("Robot Angle", () -> getRotation().getRadians(), null);
+                }
+        });
+
         public static void initRotateArm(ArmSubsystem drive) {
                 ShuffleboardTab drLayout1 = Shuffleboard.getTab("Rotate Arm");
 

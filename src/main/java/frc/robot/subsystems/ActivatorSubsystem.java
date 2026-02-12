@@ -28,7 +28,7 @@ public class ActivatorSubsystem extends SubsystemBase {
   }
 
   public void startActivator() {
-    m_driveMotor.set(0.25);
+    m_driveMotor.set(-0.25);
   }
 
   public void stopActivator() {
