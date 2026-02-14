@@ -8,7 +8,7 @@ public class AimerSubsystem extends SubsystemBase {
 
   public double m_TargetRadians;
 
-  private final int m_canId = 52;
+  private final int m_canId = 54;
 
   private final TalonFX m_driveMotor;
 

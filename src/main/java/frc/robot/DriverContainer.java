@@ -26,13 +26,24 @@ public class DriverContainer {
     private double visionTurn = 0.0;
     private double visionStrafe = 0.0;
 
+    public DriverContainer() {
+        SmartDashboard.putData("ShootPeriodic", new Sendable() {
+            @Override
+            public void initSendable(SendableBuilder builder) {
+                builder.setSmartDashboardType("Double");
+
+                builder.addDoubleProperty("Distance", () -> targetRange, null);
+            }
+        });
+    }
+
     public DriverContainer(CommandJoystick driver) {
         this.driver = driver;
 
-        SmartDashboard.putData("Shooting", new Sendable() {
+        SmartDashboard.putData("ShootCommand", new Sendable() {
             @Override
             public void initSendable(SendableBuilder builder) {
-                builder.setSmartDashboardType("SwerveDrive");
+                builder.setSmartDashboardType("Double");
 
                 builder.addDoubleProperty("Distance", () -> targetRange, null);
             }
@@ -146,5 +157,25 @@ public class DriverContainer {
         }
 
         return -visionStrafe;
+    }
+
+    public void getDistance() {
+        // Read camera data
+        var results = camera.getAllUnreadResults();
+        if (!results.isEmpty()) {
+            var result = results.get(results.size() - 1);
+            if (result.hasTargets()) {
+                for (var target : result.getTargets()) {
+                    if (target.getFiducialId() == 9) {
+                        targetRange = PhotonUtils.calculateDistanceToTargetMeters(
+                                .64, 0.45, Units.degreesToRadians(0), Units.degreesToRadians(target.getPitch()));
+                        
+                    }
+                }
+            }
+        }
+        else {
+            targetRange = 99.0;
+        }
     }
 }

@@ -8,8 +8,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public double m_TargetRadians;
 
-  private final int m_canId1 = 51;
-  private final int m_canId2 = 52;
+  private final int m_canId1 = 51; // Right shooter motor
+  private final int m_canId2 = 52; // left shooter motor
 
   private final TalonFX m_driveMotor1;
   private final TalonFX m_driveMotor2;
@@ -34,8 +34,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public void activateShooter() {
     //double shooterSpeed = 0.65; // Adjust this value as needed for the desired shooting speed
-    m_driveMotor1.set(-0.67); // Negative for inverse rotation
-    m_driveMotor2.set(0.72);
+    m_driveMotor1.set(-0.67); // Negative for inverse rotation // Right
+    m_driveMotor2.set(0.70); // Left
   }
 
   public void stopShooter() {

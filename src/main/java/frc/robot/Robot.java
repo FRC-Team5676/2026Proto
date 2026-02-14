@@ -19,8 +19,11 @@ public class Robot extends TimedRobot {
 
   private final boolean kUseLimelight = false;
 
+  private final DriverContainer driverContainer = new DriverContainer();
+
   public Robot() {
     m_robotContainer = new RobotContainer();
+
     CameraServer.startAutomaticCapture();
   }
 
@@ -81,7 +84,9 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    driverContainer.getDistance();
+  }
 
   @Override
   public void teleopExit() {}
