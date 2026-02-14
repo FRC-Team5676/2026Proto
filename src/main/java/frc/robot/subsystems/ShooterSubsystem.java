@@ -33,9 +33,9 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void activateShooter() {
-    double shooterSpeed = 0.65; // Adjust this value as needed for the desired shooting speed
-    m_driveMotor1.set(-shooterSpeed); // Negative for inverse rotation
-    m_driveMotor2.set(shooterSpeed);
+    //double shooterSpeed = 0.65; // Adjust this value as needed for the desired shooting speed
+    m_driveMotor1.set(-0.67); // Negative for inverse rotation
+    m_driveMotor2.set(0.72);
   }
 
   public void stopShooter() {

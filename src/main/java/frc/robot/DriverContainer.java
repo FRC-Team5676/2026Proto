@@ -4,11 +4,16 @@ import org.photonvision.*;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 
 public class DriverContainer {
     // Note that X is defined as forward according to WPILib convention,
     // and Y is defined as to the left according to WPILib convention.
+
+    public double targetRange = 0.0;
 
     private CommandJoystick driver;
 
@@ -21,9 +26,17 @@ public class DriverContainer {
     private double visionTurn = 0.0;
     private double visionStrafe = 0.0;
 
-
     public DriverContainer(CommandJoystick driver) {
         this.driver = driver;
+
+        SmartDashboard.putData("Shooting", new Sendable() {
+            @Override
+            public void initSendable(SendableBuilder builder) {
+                builder.setSmartDashboardType("SwerveDrive");
+
+                builder.addDoubleProperty("Distance", () -> targetRange, null);
+            }
+        });
     }
 
     public double getX() {
@@ -111,16 +124,14 @@ public class DriverContainer {
     public double getVisionStrafe() {
         // Read camera data
         boolean targetVisible = false;
-        double targetRange = 0.0;
         var results = camera.getAllUnreadResults();
         if (!results.isEmpty()) {
             var result = results.get(results.size() - 1);
             if (result.hasTargets()) {
                 for (var target : result.getTargets()) {
                     if (target.getFiducialId() == 9) {
-                        targetRange = 
-                                 PhotonUtils.calculateDistanceToTargetMeters(
-                                     .64, 0.45, Units.degreesToRadians(0), Units.degreesToRadians(target.getPitch()));
+                        targetRange = PhotonUtils.calculateDistanceToTargetMeters(
+                                .64, 0.45, Units.degreesToRadians(0), Units.degreesToRadians(target.getPitch()));
                         targetVisible = true;
                     }
                 }
