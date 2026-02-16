@@ -72,7 +72,7 @@ public class RobotContainer {
 
         // Drivetrain will execute this command periodically
 
-        /* 
+        
         drivetrain.setDefaultCommand(
                 drivetrain.applyRequest(() -> driveField
                         .withVelocityX(driverContainer.getY())
@@ -108,7 +108,7 @@ public class RobotContainer {
                         .withRotationalRate(0)
                         ));
 
-                  */      
+                       
 
         // Reset the field-centric heading
         driver.button(8).onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
@@ -120,7 +120,7 @@ public class RobotContainer {
         driver.button(1).onFalse(shooter.runOnce(() -> shooter.stopShooter()));
 
 
-        
+        /*
 
         driver.button(4).onTrue(aimer.runOnce(() -> aimer.rotateAimer(0.1)));
         driver.button(4).onFalse(aimer.runOnce(() -> aimer.stopAimer()));
@@ -132,7 +132,7 @@ public class RobotContainer {
         driver.button(5).onTrue(activator.runOnce(() -> activator.startActivator()));
         driver.button(5).onFalse(activator.runOnce(() -> activator.stopActivator()));
 
-        
+        */
 
     }
 

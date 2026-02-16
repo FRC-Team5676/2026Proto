@@ -25,6 +25,7 @@ public class DriverContainer {
     private final double VISION_DES_RANGE_m = 2.0; // Target distance offset
     private double visionTurn = 0.0;
     private double visionStrafe = 0.0;
+    private final double CAMERA_HEIGHT = 0.53; // meters
 
     public DriverContainer() {
         SmartDashboard.putData("ShootPeriodic", new Sendable() {
@@ -142,7 +143,7 @@ public class DriverContainer {
                 for (var target : result.getTargets()) {
                     if (target.getFiducialId() == 9) {
                         targetRange = PhotonUtils.calculateDistanceToTargetMeters(
-                                .64, 0.45, Units.degreesToRadians(0), Units.degreesToRadians(target.getPitch()));
+                                CAMERA_HEIGHT, 1.12, Units.degreesToRadians(0), Units.degreesToRadians(target.getPitch()));
                         targetVisible = true;
                     }
                 }
@@ -168,7 +169,7 @@ public class DriverContainer {
                 for (var target : result.getTargets()) {
                     if (target.getFiducialId() == 9) {
                         targetRange = PhotonUtils.calculateDistanceToTargetMeters(
-                                .64, 0.45, Units.degreesToRadians(0), Units.degreesToRadians(target.getPitch()));
+                                CAMERA_HEIGHT, 1.12, Units.degreesToRadians(0), Units.degreesToRadians(target.getPitch()));
                         
                     }
                 }
