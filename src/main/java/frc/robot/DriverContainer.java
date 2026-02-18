@@ -14,11 +14,13 @@ public class DriverContainer {
     // and Y is defined as to the left according to WPILib convention.
 
     public double targetRange = 0.0;
+    public double fuelRange = 0.0;
 
     private CommandJoystick driver;
 
     // Limelight/PhotonVision
     private final PhotonCamera camera = new PhotonCamera("Camera_Module_v1");
+    private final PhotonCamera colorCamera = new PhotonCamera("Microsoft_LifeCam_HD-3000");
     private final double VISION_TURN_kP = 0.05;
     private final double VISION_STRAFE_kP = 0.4;
     private final double VISION_DES_ANGLE_deg = 0.0; // Target angle offset
@@ -34,6 +36,15 @@ public class DriverContainer {
                 builder.setSmartDashboardType("Double");
 
                 builder.addDoubleProperty("Distance", () -> targetRange, null);
+            }
+        });
+
+         SmartDashboard.putData("FuelPeriodic", new Sendable() {
+            @Override
+            public void initSendable(SendableBuilder builder) {
+                builder.setSmartDashboardType("Double");
+
+                builder.addDoubleProperty("Distance", () -> fuelRange, null);
             }
         });
     }
@@ -177,6 +188,28 @@ public class DriverContainer {
         }
         else {
             targetRange = 99.0;
+        }
+    }
+
+
+    // for fuel: *******not complete******
+    public void getFuelDistance() {
+        // Read camera data
+        var results = camera.getAllUnreadResults();
+        if (!results.isEmpty()) {
+            var result = results.get(results.size() - 1);
+            if (result.hasTargets()) {
+                for (var target : result.getTargets()) {
+                    if (target.getFiducialId() == 9) {
+                        targetRange = PhotonUtils.calculateDistanceToTargetMeters(
+                                CAMERA_HEIGHT, 1.12, Units.degreesToRadians(0), Units.degreesToRadians(target.getPitch()));
+                        
+                    }
+                }
+            }
+        }
+        else {
+            fuelRange = 99.0;
         }
     }
 }
