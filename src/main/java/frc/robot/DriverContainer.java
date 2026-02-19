@@ -75,8 +75,10 @@ public class DriverContainer {
 
         value = MathUtil.applyDeadband(value, Constants.LinearDeadband);
         value = Math.signum(value) * Math.pow(value, 2);
+        value = value * Constants.MaxLinearRate * multiplier;
         double strafe_sl = m_slewLin.calculate(value);
-        return strafe_sl * Constants.MaxLinearRate * multiplier;
+
+        return strafe_sl;
     }
 
     public double getThrottle() {
@@ -89,8 +91,10 @@ public class DriverContainer {
 
         value = MathUtil.applyDeadband(value, Constants.LinearDeadband);
         value = Math.signum(value) * Math.pow(value, 2);
+        value = value * Constants.MaxLinearRate * multiplier;
         double throttle_sl = m_slewLin.calculate(value);
-        return throttle_sl * Constants.MaxLinearRate * multiplier;
+
+        return throttle_sl;
     }
 
     public double getRotation() {
@@ -119,9 +123,10 @@ public class DriverContainer {
 
         value = MathUtil.applyDeadband(value, deadband);
         value = Math.signum(value) * Math.pow(value, 2);
+        value = value * Constants.MaxAngularRate * multiplier * multiplierButton;
         double rotation_sl = m_slewRot.calculate(value);
-        return rotation_sl * Constants.MaxAngularRate * multiplier * multiplierButton;
-    }
+
+        return rotation_sl;}
 
     public double getVisionTwist() {
         // Read camera data
@@ -175,7 +180,8 @@ public class DriverContainer {
             visionStrafe = 0.0;
         }
 
-        return -visionStrafe;
+        double strafe_sl = m_slewLin.calculate(-visionStrafe);
+        return strafe_sl;
     }
 
     public void getDistance() {
