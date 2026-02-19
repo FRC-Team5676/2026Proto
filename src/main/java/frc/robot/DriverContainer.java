@@ -16,7 +16,8 @@ public class DriverContainer {
 
     public double targetRange = 0.0;
     public double fuelRange = 0.0;
-    private final SlewRateLimiter m_slewLin = new SlewRateLimiter(1.55);
+    private final SlewRateLimiter m_slewThrottle = new SlewRateLimiter(1.55);
+    private final SlewRateLimiter m_slewStrafe = new SlewRateLimiter(1.55);
     private final SlewRateLimiter m_slewRot = new SlewRateLimiter(3);
 
     private CommandJoystick driver;
@@ -76,7 +77,7 @@ public class DriverContainer {
         value = MathUtil.applyDeadband(value, Constants.LinearDeadband);
         value = Math.signum(value) * Math.pow(value, 2);
         value = value * Constants.MaxLinearRate * multiplier;
-        double strafe_sl = m_slewLin.calculate(value);
+        double strafe_sl = m_slewStrafe.calculate(value);
 
         return strafe_sl;
     }
@@ -92,7 +93,7 @@ public class DriverContainer {
         value = MathUtil.applyDeadband(value, Constants.LinearDeadband);
         value = Math.signum(value) * Math.pow(value, 2);
         value = value * Constants.MaxLinearRate * multiplier;
-        double throttle_sl = m_slewLin.calculate(value);
+        double throttle_sl = m_slewThrottle.calculate(value);
 
         return throttle_sl;
     }
@@ -180,7 +181,7 @@ public class DriverContainer {
             visionStrafe = 0.0;
         }
 
-        double strafe_sl = m_slewLin.calculate(-visionStrafe);
+        double strafe_sl = m_slewStrafe.calculate(-visionStrafe);
         return strafe_sl;
     }
 
