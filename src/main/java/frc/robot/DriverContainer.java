@@ -99,7 +99,6 @@ public class DriverContainer {
     }
 
     public double getRotation() {
-        double deadband;
         double value = -driver.getTwist(); // Drive counterclockwise with negative twist (CCW)
 
         double multiplierButton = 1;
@@ -112,17 +111,7 @@ public class DriverContainer {
         // y = -0.5x + 1.5
         double multiplier = -0.5 * driver.getRawAxis(3) + 1.5;
 
-        if (Math.signum(value) <= 0) {
-            // CCW
-            deadband = 0.5; // larger on this side because of joystick sensitivity on CCW rotation
-        } else if (Math.signum(value) > 0) {
-            // CW
-            deadband = 0.0;
-        } else {
-            return 0;
-        }
-
-        value = MathUtil.applyDeadband(value, deadband);
+        value = MathUtil.applyDeadband(value, Constants.AngularDeadband);
         value = Math.signum(value) * Math.pow(value, 2);
         value = value * Constants.MaxAngularRate * multiplier * multiplierButton;
         double rotation_sl = m_slewRot.calculate(value);

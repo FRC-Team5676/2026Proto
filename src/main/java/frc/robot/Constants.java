@@ -9,5 +9,5 @@ public class Constants {
                                                                                       // max angular velocity
     
     public static final double LinearDeadband = 0.05; // Deadband for linear movement
-    public static final double AngularDeadband = 0.05; // Deadband for angular movement
+    public static final double AngularDeadband = 0.1; // Deadband for angular movement
 }
