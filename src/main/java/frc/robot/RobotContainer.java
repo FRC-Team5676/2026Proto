@@ -75,26 +75,26 @@ public class RobotContainer {
         
         drivetrain.setDefaultCommand(
                 drivetrain.applyRequest(() -> driveField
-                        .withVelocityX(driverContainer.getY())
-                        .withVelocityY(driverContainer.getX())
-                        .withRotationalRate(driverContainer.getTwist())));
+                        .withVelocityX(driverContainer.getThrottle())
+                        .withVelocityY(driverContainer.getStrafe())
+                        .withRotationalRate(driverContainer.getRotation())));
 
         drivetrain.registerTelemetry(logger::telemeterize); 
         
         // Robot centric driving
         driver.button(12).whileTrue(
                 drivetrain.applyRequest(() -> driveRobot
-                        .withVelocityX(driverContainer.getY())
-                        .withVelocityY(driverContainer.getX())
-                        .withRotationalRate(driverContainer.getTwist())));
+                        .withVelocityX(driverContainer.getThrottle())
+                        .withVelocityY(driverContainer.getStrafe())
+                        .withRotationalRate(driverContainer.getRotation())));
 
         
         // Auto-align to target when button held
         driver.button(4).whileTrue(
                 drivetrain.applyRequest(() -> driveField
                         
-                        .withVelocityX(driverContainer.getY())
-                        .withVelocityY(driverContainer.getX())
+                        .withVelocityX(driverContainer.getThrottle())
+                        .withVelocityY(driverContainer.getStrafe())
                         .withRotationalRate(driverContainer.getVisionTwist())
                         ));
 
@@ -103,7 +103,7 @@ public class RobotContainer {
         driver.button(6).whileTrue(
                 drivetrain.applyRequest(() -> driveRobot
                         
-                        .withVelocityX(driverContainer.getY())
+                        .withVelocityX(driverContainer.getThrottle())
                         .withVelocityY(driverContainer.getVisionStrafe())
                         .withRotationalRate(0)
                         ));

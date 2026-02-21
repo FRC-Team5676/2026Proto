@@ -3,6 +3,7 @@ package frc.robot;
 import org.photonvision.*;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
@@ -15,6 +16,9 @@ public class DriverContainer {
 
     public double targetRange = 0.0;
     public double fuelRange = 0.0;
+    private final SlewRateLimiter m_slewThrottle = new SlewRateLimiter(1.55);
+    private final SlewRateLimiter m_slewStrafe = new SlewRateLimiter(1.55);
+    private final SlewRateLimiter m_slewRot = new SlewRateLimiter(3);
 
     private CommandJoystick driver;
 
@@ -62,7 +66,7 @@ public class DriverContainer {
         });
     }
 
-    public double getX() {
+    public double getStrafe() {
         double value = -driver.getX(); // Drive left with negative X (left)
 
         double multiplier = 1;
@@ -72,10 +76,13 @@ public class DriverContainer {
 
         value = MathUtil.applyDeadband(value, Constants.LinearDeadband);
         value = Math.signum(value) * Math.pow(value, 2);
-        return value * Constants.MaxLinearRate * multiplier;
+        value = value * Constants.MaxLinearRate * multiplier;
+        double strafe_sl = m_slewStrafe.calculate(value);
+
+        return strafe_sl;
     }
 
-    public double getY() {
+    public double getThrottle() {
         double value = -driver.getY(); // Drive forward with negative Y (forward)
 
         double multiplier = 1;
@@ -85,11 +92,13 @@ public class DriverContainer {
 
         value = MathUtil.applyDeadband(value, Constants.LinearDeadband);
         value = Math.signum(value) * Math.pow(value, 2);
-        return value * Constants.MaxLinearRate * multiplier;
+        value = value * Constants.MaxLinearRate * multiplier;
+        double throttle_sl = m_slewThrottle.calculate(value);
+
+        return throttle_sl;
     }
 
-    public double getTwist() {
-        double deadband;
+    public double getRotation() {
         double value = -driver.getTwist(); // Drive counterclockwise with negative twist (CCW)
 
         double multiplierButton = 1;
@@ -102,20 +111,12 @@ public class DriverContainer {
         // y = -0.5x + 1.5
         double multiplier = -0.5 * driver.getRawAxis(3) + 1.5;
 
-        if (Math.signum(value) <= 0) {
-            // CCW
-            deadband = 0.5; // larger on this side because of joystick sensitivity on CCW rotation
-        } else if (Math.signum(value) > 0) {
-            // CW
-            deadband = 0.0;
-        } else {
-            return 0;
-        }
-
-        value = MathUtil.applyDeadband(value, deadband);
+        value = MathUtil.applyDeadband(value, Constants.AngularDeadband);
         value = Math.signum(value) * Math.pow(value, 2);
-        return value * Constants.MaxAngularRate * multiplier * multiplierButton;
-    }
+        value = value * Constants.MaxAngularRate * multiplier * multiplierButton;
+        double rotation_sl = m_slewRot.calculate(value);
+
+        return rotation_sl;}
 
     public double getVisionTwist() {
         // Read camera data
@@ -141,7 +142,8 @@ public class DriverContainer {
             visionTurn = 0.0;
         }
 
-        return visionTurn;
+        double rotation_sl = m_slewRot.calculate(visionTurn);
+        return rotation_sl;
     }
 
     public double getVisionStrafe() {
@@ -168,7 +170,8 @@ public class DriverContainer {
             visionStrafe = 0.0;
         }
 
-        return -visionStrafe;
+        double strafe_sl = m_slewStrafe.calculate(-visionStrafe);
+        return strafe_sl;
     }
 
     public void getDistance() {
