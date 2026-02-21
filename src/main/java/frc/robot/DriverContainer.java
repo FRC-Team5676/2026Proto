@@ -19,13 +19,15 @@ public class DriverContainer {
     private final SlewRateLimiter m_slewThrottle = new SlewRateLimiter(1.55);
     private final SlewRateLimiter m_slewStrafe = new SlewRateLimiter(1.55);
     private final SlewRateLimiter m_slewRot = new SlewRateLimiter(3);
+    private final SlewRateLimiter m_slewVisionRot = new SlewRateLimiter(2.5);
+    private final SlewRateLimiter m_slewVisionStrafe = new SlewRateLimiter(2.0);
 
     private CommandJoystick driver;
 
     // Limelight/PhotonVision
     private final PhotonCamera camera = new PhotonCamera("Camera_Module_v1");
     private final PhotonCamera colorCamera = new PhotonCamera("Microsoft_LifeCam_HD-3000");
-    private final double VISION_TURN_kP = 0.05;
+    private final double VISION_TURN_kP = 0.1;
     private final double VISION_STRAFE_kP = 0.4;
     private final double VISION_DES_ANGLE_deg = 0.0; // Target angle offset
     private final double VISION_DES_RANGE_m = 2.0; // Target distance offset
@@ -116,7 +118,8 @@ public class DriverContainer {
         value = value * Constants.MaxAngularRate * multiplier * multiplierButton;
         double rotation_sl = m_slewRot.calculate(value);
 
-        return rotation_sl;}
+        return rotation_sl;
+    }
 
     public double getVisionTwist() {
         // Read camera data
@@ -142,7 +145,7 @@ public class DriverContainer {
             visionTurn = 0.0;
         }
 
-        double rotation_sl = m_slewRot.calculate(visionTurn);
+        double rotation_sl = m_slewVisionRot.calculate(visionTurn);
         return rotation_sl;
     }
 
@@ -170,7 +173,7 @@ public class DriverContainer {
             visionStrafe = 0.0;
         }
 
-        double strafe_sl = m_slewStrafe.calculate(-visionStrafe);
+        double strafe_sl = m_slewVisionStrafe.calculate(-visionStrafe);
         return strafe_sl;
     }
 
